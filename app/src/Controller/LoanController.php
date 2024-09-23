@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Loan;
+use App\Entity\LoanRequest;
+use App\Form\Type\LoanRequestType;
 use Doctrine\ORM\EntityManagerInterface;
 use phpDocumentor\Reflection\Types\This;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,8 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class LoanController extends AbstractController
 {
-    #[Route('/api/v1/credit/calculate', name: 'app_loan')]
-    public function index(Request $request, EntityManagerInterface $em): Response
+    #[Route('/api/v1/credit/calculate', name: 'app_loan', methods: ["GET"])]
+    public function getCalculation(Request $request, EntityManagerInterface $em): Response
     {
         $data = $this->validate($request);
 
@@ -32,6 +34,41 @@ class LoanController extends AbstractController
             'title' => $program->getTitle(),
             'monthlyPayment' => $monthlyPayment
         ]);
+    }
+
+    #[Route('/api/v1/request', name: 'app_loan_request', methods: ["POST"])]
+    public function saveRequest(Request $request, EntityManagerInterface $em): Response
+    {
+        $loanRequest = new LoanRequest();
+
+        $form = $this->createForm(LoanRequestType::class, $loanRequest);
+
+        $json = $request->getContent();
+        if ($decodedJson = json_decode($json, true)) {
+            $data = $decodedJson;
+        } else {
+            $data = $request->request->all();
+        }
+        $formData = [];
+        foreach ($form->all() as $name => $field) {
+            if (isset($data[$name])) {
+                $formData[$name] = $data[$name];
+            }
+        }
+
+        $form->submit($formData);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            $loanRequest = $form->getData();
+
+            $em->persist($loanRequest);
+            $em->flush();
+
+            return $this->json("success");
+        }
+
+        return $this->json("Invalid arguments", 422);
     }
 
     private function validate($request){

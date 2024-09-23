@@ -19,6 +19,11 @@ class Loan
     #[ORM\Column]
     private ?int $interestRate = null;
 
+    public function __toString()
+    {
+        return $this->id;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -27,6 +27,11 @@ class Car
     #[ORM\JoinColumn(name: 'brand_id', referencedColumnName: 'id')]
     private Brand $brand;
 
+    public function __toString()
+    {
+        return $this->id;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

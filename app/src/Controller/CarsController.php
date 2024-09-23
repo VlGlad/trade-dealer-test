@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class CarsController extends AbstractController
 {
     #[Route('/api/v1/cars', name: 'app_cars_list', methods: ["GET"])]
-    public function index(EntityManagerInterface $em): Response
+    public function getCarsList(EntityManagerInterface $em): Response
     {
         $cars = $em->getRepository(Car::class)->findAllWithoutModel();
 
@@ -19,7 +19,7 @@ class CarsController extends AbstractController
     }
 
     #[Route('/api/v1/cars/{id}', name: 'app_car', methods: ["GET"])]
-    public function show(EntityManagerInterface $em, int $id): Response
+    public function getCarById(EntityManagerInterface $em, int $id): Response
     {
         $car = $em->getRepository(Car::class)->find($id);
 
