@@ -84,4 +84,13 @@ class Car
 
         return $this;
     }
+
+    public function serialize(){
+        return [
+            "id" => $this->id,
+            "photo" => $this->photo,
+            "price" => $this->price,
+            "brand" => $this->brand
+        ];
+    }
 }
