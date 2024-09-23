@@ -16,6 +16,17 @@ class CarRepository extends ServiceEntityRepository
         parent::__construct($registry, Car::class);
     }
 
+    public function findAllWithoutModel(): ?array
+    {
+        return $this->createQueryBuilder('c')
+            ->select(['c.id, c.photo, c.price'])
+            ->leftJoin('\App\Entity\Brand', 'b', 'WITH', 'c.brand=b.id')
+            ->addSelect('b as brand')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     //    /**
     //     * @return Car[] Returns an array of Car objects
     //     */
@@ -28,16 +39,6 @@ class CarRepository extends ServiceEntityRepository
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Car
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
     //        ;
     //    }
 }
